@@ -1,15 +1,19 @@
-use anchor_lang::prelude::*;
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(
+        init,
+        payer = user,
+        space = 8 + 32, // 8 for discriminator, 32 for name
+    )]
+    pub my_account: Account<'info, MyAccount>,
 
-declare_id!("YourProgramId1111111111111111111111111111111111");
+    #[account(mut)]
+    pub user: Signer<'info>,
 
-#[program]
-pub mod wolftrack {
-    use super::*;
-
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        Ok(())
-    }
+    pub system_program: Program<'info, System>,
 }
 
-#[derive(Accounts)]
-pub struct Initialize {}
+#[account]
+pub struct MyAccount {
+    pub name: [u8; 32],
+}
