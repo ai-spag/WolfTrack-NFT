@@ -1,0 +1,15 @@
+{
+  "name": "Solana Anchor Dev",
+  "dockerFile": "Dockerfile",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "postCreateCommand": "anchor --version && solana --version",
+  "extensions": [
+    "rust-lang.rust-analyzer",
+    "vadimcn.vscode-lldb",
+    "esbenp.prettier-vscode"
+  ],
+  "forwardPorts": [8899],
+  "remoteUser": "vscode"
+}
