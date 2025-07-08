@@ -1,9 +1,9 @@
 [programs.localnet]
-wolftrack = "programs/wolftrack/target/deploy/wolftrack.so"
+wolftrack = "9uCnxtqvRhMH4YPhAGKDyBmhHkG4Ef3p1YKXdVR7d6Qc"
 
 [provider]
 cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "mocha -t 1000000 tests/"
+test = "mocha"
