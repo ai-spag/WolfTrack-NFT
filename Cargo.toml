@@ -2,3 +2,5 @@
 members = [
     "programs/wolftrack"
 ]
+[profile.release]
+overflow-checks = true
