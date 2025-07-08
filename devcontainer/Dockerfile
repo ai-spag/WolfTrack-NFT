@@ -12,16 +12,17 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     lsb-release
 
-# Install Solana CLI from source
+# Install Solana CLI from source to /usr/local/bin
 RUN git clone https://github.com/solana-labs/solana.git /solana && \
     cd /solana && \
     git checkout stable && \
     cargo build --release && \
-    cp target/release/solana* /usr/local/bin/
+    install -m 755 target/release/solana /usr/local/bin/solana && \
+    install -m 755 target/release/solana-* /usr/local/bin/
 
-# Install Anchor CLI
+# Install Anchor CLI globally and link to /usr/local/bin
 RUN cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked && \
-    cp /root/.cargo/bin/anchor /usr/local/bin/
+    ln -s /root/.cargo/bin/anchor /usr/local/bin/anchor
 
-# Set working directory
+# Create workspace
 WORKDIR /workspace
