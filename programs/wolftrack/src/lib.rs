@@ -1,13 +1,12 @@
 use anchor_lang::prelude::*;
 
-declare_id!("9zT7oFjMiCKuz3pvGKtHtG6MFda9LepV8PUr3UUNoezU");
+declare_id!("YourProgramId1111111111111111111111111111111111");
 
 #[program]
 pub mod wolftrack {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        msg!("🐺 WolfTrack NFT Program Initialized!");
         Ok(())
     }
 }
