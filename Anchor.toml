@@ -1,5 +1,5 @@
 [programs.localnet]
-wolftrack = "wolftrack1111111111111111111111111111111111"
+wolftrack = "programs/wolftrack/target/deploy/wolftrack.so"
 
 [provider]
 cluster = "localnet"
