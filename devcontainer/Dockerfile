@@ -1,16 +1,29 @@
 FROM rust:1.72
 
-# Install Solana CLI
-RUN apt-get update && apt-get install -y curl pkg-config libssl-dev build-essential libudev-dev git && \
-    sh -c "$(curl -sSfL https://release.solana.com/stable/install)" && \
-    echo 'export PATH="/root/.local/share/solana/install/active_release/bin:$PATH"' >> /root/.bashrc
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+  libssl-dev \
+  pkg-config \
+  build-essential \
+  libudev-dev \
+  git \
+  ca-certificates \
+  curl \
+  gnupg \
+  lsb-release
 
-# Install Anchor
+# Install Solana CLI from source
+RUN git clone https://github.com/solana-labs/solana.git /solana && \
+    cd /solana && \
+    git checkout stable && \
+    cargo build --release && \
+    cp target/release/solana* /usr/local/bin/
+
+# Install Anchor CLI
 RUN cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked
 
-# Re-expose solana/anchor paths
-ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
-ENV PATH="/usr/local/cargo/bin:$PATH"
+# Set PATH
+ENV PATH="/root/.cargo/bin:$PATH"
 
-# Create workspace directory
+# Create working directory
 WORKDIR /workspace
