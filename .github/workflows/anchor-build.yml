@@ -2,29 +2,42 @@ name: Anchor Build
 
 on:
   push:
-    branches: [main]
+    paths:
+      - '**/*.rs'
+      - 'Anchor.toml'
+  pull_request:
+    paths:
+      - '**/*.rs'
+      - 'Anchor.toml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
 
-    - name: Install Solana CLI
-      run: |
-        sh -c "$(curl -sSfL https://release.solana.com/v1.17.10/install)"
-        echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      - name: Install AVM (Anchor Version Manager)
+        run: |
+          curl -sSf https://raw.githubusercontent.com/project-serum/anchor/avm/install.sh | sh
+          echo "$HOME/.avm/bin" >> $GITHUB_PATH
 
-    - name: Install Anchor CLI
-      run: cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked
+      - name: Install Anchor 0.29.0
+        run: |
+          source "$HOME/.avm/bin/avm.sh"
+          avm install 0.29.0
+          avm use 0.29.0
 
-    - name: Build Anchor Program
-      run: anchor build
+      - name: Show Anchor version
+        run: |
+          source "$HOME/.avm/bin/avm.sh"
+          anchor --version
+
+      - name: Build Anchor project
+        run: |
+          source "$HOME/.avm/bin/avm.sh"
+          anchor build
