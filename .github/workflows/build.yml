@@ -1,12 +1,58 @@
-- name: Install AVM (Anchor Version Manager)
-  run: |
-    curl -sSfL https://raw.githubusercontent.com/project-serum/anchor/avm/install.sh | sh
-    echo "$HOME/.avm/bin" >> $GITHUB_PATH
+name: Anchor Build
 
-- name: Install Anchor 0.29.0
-  run: |
-    avm install 0.29.0
-    avm use 0.29.0
+on:
+  push:
+    paths:
+      - '**/*.rs'
+      - 'Anchor.toml'
+  pull_request:
+    paths:
+      - '**/*.rs'
+      - 'Anchor.toml'
 
-- name: Anchor Build
-  run: anchor build
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Solana CLI
+        run: |
+          # Install Solana CLI, which is often a prerequisite for Anchor
+          sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
+          # Add Solana CLI's binary directory to the GitHub Actions PATH
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Install AVM (Anchor Version Manager)
+        run: |
+          # Install AVM itself
+          curl -sSf https://raw.githubusercontent.com/project-serum/anchor/avm/install.sh | sh
+          # Add AVM's bin directory to the GitHub Actions PATH for the entire job
+          # This makes the 'avm' command itself available in subsequent steps
+          echo "$HOME/.avm/bin" >> $GITHUB_PATH
+
+      - name: Install Anchor 0.29.0
+        run: |
+          # Source avm.sh to set up the environment for 'avm' and 'anchor' commands
+          # This is crucial as each 'run' step starts a new shell session
+          source "$HOME/.avm/bin/avm.sh"
+          echo "Installing Anchor 0.29.0..."
+          avm install 0.29.0
+          echo "Using Anchor 0.29.0..."
+          avm use 0.29.0
+          # Verify that Anchor is now available and the correct version
+          echo "Verifying Anchor version..."
+          anchor --version
+
+      - name: Build Anchor project
+        run: |
+          # Source avm.sh again to ensure the Anchor environment is active
+          # for the 'anchor build' command in this separate step
+          source "$HOME/.avm/bin/avm.sh"
+          echo "Building Anchor project..."
+          anchor build
