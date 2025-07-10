@@ -1,33 +1,12 @@
-name: Anchor Build (Solana)
+- name: Install AVM (Anchor Version Manager)
+  run: |
+    curl -sSfL https://raw.githubusercontent.com/project-serum/anchor/avm/install.sh | sh
+    echo "$HOME/.avm/bin" >> $GITHUB_PATH
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+- name: Install Anchor 0.29.0
+  run: |
+    avm install 0.29.0
+    avm use 0.29.0
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
-
-    - name: Install Solana CLI
-      run: |
-        sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
-        echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-
-    - name: Install Anchor
-      run: cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked
-
-    - name: Anchor Build
-      run: |
-        anchor build
+- name: Anchor Build
+  run: anchor build
